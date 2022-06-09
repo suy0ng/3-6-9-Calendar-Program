@@ -1,5 +1,8 @@
 #include <stdio.h>
 #include <windows.h>
+#include <time.h>
+
+enum Days {SUN,MON,TUE,WED,THU,FRI,SAT};
 
 int main()
 {
@@ -23,20 +26,5 @@ int main()
 	Sleep(1700); //2초 대기
 	system("cls"); //콘솔화면 지우기
 
-	printf("                                  2022년 %d월                               \n", mon);
-	printf("     ===============================================================       \n");
-	printf("  \tSUN\tMON\tTUE\tWED\tTHU\tFRI\tSAT          \n");
-
-	for (int i = 1; i < 6; i++) 
-	{
-		printf("   \t");
-		for (j = 1 ; j < 8; j++)
-		{
-			printf("%d\t", k);
-			k++;
-			if (k > 30) break;
-		}
-		printf("\n");
-	}
 
 }
