@@ -3,6 +3,8 @@
 #include <time.h>
 #include <conio.h>
 
+char schedule[40][12][31];
+
 void CursorView()
 {
 	CONSOLE_CURSOR_INFO cursorInfo = { 0, };
@@ -17,8 +19,19 @@ void gotoxy(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
+void Schedule()
+{
+	int schedule_month, schedule_day;
+	printf("\n\n\n");
+	printf("일정을 추가하실 날짜를 입력해주세요 (M / D) (뛰어 쓰기 필수!!) >> ");
+	scanf("%d / %d", &schedule_month, &schedule_day);
+
+
+}
+
 void draw_start_Calendar()
 {
+    //현재 날짜 구하기
 	CursorView();
 	time_t timer;
 	struct tm* t;
@@ -26,181 +39,220 @@ void draw_start_Calendar()
 	t = localtime(&timer); // 포맷팅을 위해 구조체에 넣기
 	int year = t->tm_year;
 
+	// 켈린더의 첫 시작화면을 출력합니다
 	printf("\n");
-	printf("  ");
-	for (int i = 0; i < 59; i++)
+	printf("  "); //2칸 뛰어쓰기
+	for (int i = 0; i < 59; i++) // '=' 59번 출력
 		printf("=");
-	for (int i = 0; i < 13; i++)
+	for (int i = 0; i < 13; i++) // 13줄 \n
 		printf("\n");
-	for (int j = 0; j < 20; j++)
+	for (int j = 0; j < 20; j++) // 20칸 뛰기
 		printf(" ");
-	printf("  %d ", year);
+	printf("  %d ", year); // 현재 년도 출력
 	printf("CALENDAR");
 	printf("\n");
-	for (int i = 0; i < 13; i++)
+	for (int i = 0; i < 13; i++) //13줄 \n
 		printf("\n");
-	printf("  ");
-	for (int i = 0; i < 59; i++)
+	printf("  "); // 2칸 뛰어 쓰기
+	for (int i = 0; i < 59; i++) // '=' 59번 출력
 		printf("=");
 }
 
 void draw_Calendar() {
-	//현재 시간 구하기
-	time_t timer;
-	struct tm* t;
-	timer = time(NULL); // 1970년 1월 1일 0시 0분 0초부터 시작하여 현재까지의 초
-	t = localtime(&timer); // 포맷팅을 위해 구조체에 넣기
-
-	int month = t->tm_mon + 1, i, oneweek = t->tm_wday - 1, day = t->tm_mday, year = t->tm_year + 1900, pin_day = 1; //현재시간을 각각의 변수에 대입 한다 ( + 영기 변수에 대해 주석 달아줘)
-	char q = 'd'; //주석 필요
+    time_t timer;
+    struct tm* t;
+    timer = time(NULL); // 1970년 1월 1일 0시 0분 0초부터 시작하여 현재까지의 초
+    t = localtime(&timer); // 포맷팅을 위해 구조체에 넣기
+    int month = t->tm_mon + 1, i, oneweek = t->tm_wday - 1, day = t->tm_mday, year = t->tm_year + 1900, pin_day = 1, past_day = 0, reader = 0;//day : 상단 출력용, pin_day : 달력 출력용
+    char q = 'd';
 
 
-	while (1) {
-		CursorView(); //Cosor를 보이지않게 한다
-		if (q == 'd' || q == 'D' || q == 'a' || q == 'A') {
-			printf("\n\t\t\t%4d년\t%2d월 %2d일\n", year, month, day);
-			printf("\n ");
-			for (i = 0; i < 59; i++)
-				printf("=");
-			printf("\n\n\n");
-			printf("\tSun\tMon\tTue\tWed\tThu\tFri\tSat\n\n\n");
-			pin_day = 1; //현재의 시간을 구해 달력의 위부분을 그린다
+    while (1) {
+        CursorView();
+
+        if (q == 'd' || q == 'D' || q == 'a' || q == 'A') {
+            printf("\n\t\t\t%4d년\t%2d월 %2d일\n", year, month, day);
+            printf("\n ");
+            for (i = 0; i < 59; i++)
+                printf("=");
+            printf("\n\n\n");
+            printf("\tSun\tMon\tTue\tWed\tThu\tFri\tSat\n\n\n");
+            pin_day = 1;
+
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+
+            for (i = 1; i < oneweek; i++) {
+                if (i == 1) {
+                    switch (month) {
+                    case 1:
+                    case 2:
+                    case 4:
+                    case 6:
+                    case 8:
+                    case 9:
+                    case 11:
+                        past_day = 31 - oneweek + 2;
+                        break;
+                    case 5:
+                    case 7:
+                    case 10:
+                    case 12:
+                        past_day = 30 - oneweek + 2;
+                        break;
+                    case 3:
+                        past_day = 28 - oneweek + 2;
+                        if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0)
+                            past_day++;
+                        break;
+                    }
+                }
+                printf("\t%2d", past_day);
+                past_day++;
+            }
+
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+
+            switch (month) {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                for (; pin_day <= 31; pin_day++) {
+                    printf("\t%2d", pin_day);
+                    oneweek++;
+                    if (oneweek > 7) {
+                        printf("\n\n\n\n");
+                        oneweek = 1;
+                    }
+                }
+                break;
 
 
-			switch (month) {
-			case 1:
-			case 3:
-			case 5:
-			case 7:
-			case 8:
-			case 10:
-			case 12: //31일 까지있는 달의 달력를 그린다
-				for (; pin_day <= 31; pin_day++) {
-					if (pin_day == 1)
-						for (i = 1; i < oneweek; i++)
-							printf("\t");
-					printf("\t%2d", pin_day);
-					oneweek++;
-					if (oneweek > 7) {
-						printf("\n\n\n\n");
-						oneweek = 1;
-					}
-				}
-				printf("\n\n\n");
-				break;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                for (; pin_day <= 30; pin_day++) {
+                    printf("\t%2d", pin_day);
+                    oneweek++;
+                    if (oneweek > 7) {
+                        printf("\n\n\n\n");
+                        oneweek = 1;
+                    }
+                }
+                break;
 
 
-			case 4:
-			case 6:
-			case 9:
-			case 11: // 30일 까지있는달의 달력을 그린다
-				for (; pin_day <= 30; pin_day++) {
-					if (pin_day == 1)
-						for (i = 1; i < oneweek; i++)
-							printf("\t");
-					printf("\t%2d", pin_day);
-					oneweek++;
-					if (oneweek > 7) {
-						printf("\n\n\n\n");
-						oneweek = 1;
-					}
-				}
-				printf("\n\n\n");
-				break;
+            case 2:
+                if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0) {
+                    for (; pin_day <= 29; pin_day++) {
+                        printf("\t%2d", pin_day);
+                        oneweek++;
+                        if (oneweek > 7) {
+                            printf("\n\n\n\n");
+                            oneweek = 1;
+                        }
+                    }
+                }
+
+                else {
+                    for (; pin_day <= 28; pin_day++) {
+                        printf("\t%2d", pin_day);
+                        oneweek++;
+                        if (oneweek > 7) {
+                            printf("\n\n\n\n");
+                            oneweek = 1;
+                        }
+                    }
+                }
+                break;
+            }
+        }
 
 
-			case 2: //2월달의 달력을 그린다
-				if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0) //윤년을 구한다  
-				{
-					for (; pin_day <= 29; pin_day++) //윤년의 2월 달력 그리기
-					{
-						if (pin_day == 1)
-							for (i = 1; i < oneweek; i++)
-								printf("\t");
-						printf("\t%2d", pin_day);
-						oneweek++;
-						if (oneweek > 7) {
-							printf("\n\n\n\n");
-							oneweek = 1;
-						}
-					}
-					printf("\n\n\n");
-				}
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 
-				else //윤년이 아닌 년도의 2월 달력구하기 
-				{
-					for (; pin_day <= 28; pin_day++) {
-						if (pin_day == 1)
-							for (i = 1; i < oneweek; i++)
-								printf("\t");
-						printf("\t%2d", pin_day);
-						oneweek++;
-						if (oneweek > 7) {
-							printf("\n\n\n\n");
-							oneweek = 1;
-						}
-					}
-					printf("\n\n\n");
-				}
-				break;
-				printf("\n\n\n");
-				break;
-			}
-		}
+        past_day = 1;
+        reader = 0;
+        for (i = oneweek; i < 15; i++) {
+            printf("\t%2d", past_day);
+            past_day++;
+            reader++;
+            if (i == 7) {
+                if (reader < 5)
+                    printf("\n\n\n\n");
+                else
+                    break;
+            }
+        }
 
-		gotoxy(4, 10);
-		printf("---");
-		q = _getch(); //변수 q를 버퍼없이 입력받는다
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15);
+        gotoxy(4, 10);
+        printf("---");
+        q = _getch();
 
-		if (q == 'd' || q == 'D') // d 또는 D를 입력받으면 Month가 앞으로 한달 이동한다
-		{
-			month++;
-			if (month == 13) {
-				month = 1;
-				year++;
-			}
-			system("cls");
-		}
-		else if (q == 'a' || q == 'A') // A 또는 a를 입력받으면 Month가 뒤로 한달 이동한다
-		{
-			switch (month) {
-			case 2:
-			case 3:
-				oneweek -= 3;
-				if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0)
-					oneweek--;
-				break;
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 9:
-			case 10:
-			case 11:
-			case 12:
-				oneweek -= 5;
-				break;
-			case 1:
-			case 8:
-				oneweek -= 6;
-				break;
-			}
-			month--;
-			if (oneweek <= 0)
-				oneweek += 7;
-			if (month == 0) {
-				month = 12;
-				year--;
-			}
-			system("cls");
-		}
-		else {
-			printf("");
-		}
-		pin_day = 1;
+        if (q == 'd' || q == 'D') {
+            month++;
+            if (month == 13) {
+                month = 1;
+                year++;
+            }
 
-	}
+            //COORD pos = { 0 , 0 };
+            //SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+            system("cls");
+        }
+
+        else if (q == 'a' || q == 'A') {
+            switch (month) {
+            case 2:
+            case 3:
+                oneweek -= 3;
+                if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0)
+                    oneweek--;
+                break;
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                oneweek -= 5;
+                break;
+            case 1:
+            case 8:
+                oneweek -= 6;
+                break;
+            }
+
+
+            month--;
+            if (oneweek <= 0)
+                oneweek += 7;
+            if (month == 0) {
+                month = 12;
+                year--;
+            }
+
+            //COORD pos = { 0 , 0 };
+            //SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+            system("cls");
+        }
+
+
+        else {
+            printf("");
+        }
+        pin_day = 1;
+
+    }
 }
+
 
 
 
@@ -212,5 +264,5 @@ int main()
 	system("cls"); //화면 삭제
 	
 	draw_Calendar(); //달력출력
-
+	Schedule();
 }
