@@ -69,7 +69,7 @@ void draw_Calendar()
     struct tm* t;
     timer = time(NULL); // 1970년 1월 1일 0시 0분 0초부터 시작하여 현재까지의 초
     t = localtime(&timer); // 포맷팅을 위해 구조체에 넣기
-    int month = t->tm_mon + 1, i, oneweek = t->tm_wday - 1, day = t->tm_mday, year = t->tm_year + 1900;// month : 월 관련 전체 관여, i = for문 돌리기용, oneweek = 일주일 관련 위치 출력 도우미, day : 상단 날짜 출력용, year : 상단 년도 출력용
+    int month = t->tm_mon + 1, i, oneweek = t->tm_wday - 1, day = t->tm_mday, year = t->tm_year + 1900;// month : 월 관련 전체 관여, i = for문 돌리기용, oneweek = 날짜를 요일에 맞춰서 출력할 수 있게 해주는 함수, day : 상단 날짜 출력용, year : 상단 년도 출력용
     int pin_day = 1, past_day = 0, next_day = 0, reader1 = 0, reader2 = 0;// pin_day : 달력 출력용, past_day : 저번 달 날짜 출력용, nex_day : 다음 달 날짜 출력용, reader1, 2 : 달력 높이 조절용
     char q = 'd'; //입력 받는 용도
 
@@ -77,8 +77,8 @@ void draw_Calendar()
     while (1) {
         CursorView();
 
-        // 'd', 'D', 'a', 'A'를 눌렀으면 달력 출력
-        if (q == 'd' || q == 'D' || q == 'a' || q == 'A') {
+        // 'd', 'D', 'a', 'A', 'w', 'W', 's', 'S'를 눌렀으면 달력 출력
+        if (q == 'd' || q == 'D' || q == 'a' || q == 'A' || q == 'w' || q == 'W' || q == 's' || q == 'S') {
             printf("\n\t\t\t%4d년\t%2d월 %2d일\n", year, month, day);
             printf("\n    ");
             for (i = 0; i < 59; i++)
@@ -247,6 +247,7 @@ void draw_Calendar()
                 year++;
             }
 
+
             COORD pos = { 0 , 0 };
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
             //system("cls");
@@ -257,7 +258,7 @@ void draw_Calendar()
             switch (month) {
             case 2:
             case 3:
-                oneweek -= 3;
+                oneweek -= 3;//(이번 달 - 28) + (저번 달 - 28)만큼 빼기;
                 if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0)
                     oneweek--;
                 break;
@@ -275,6 +276,10 @@ void draw_Calendar()
             case 8:
                 oneweek -= 6;
                 break;
+                //oneweek는 날짜를 요일에 맞춰 출력하기 위한 함수이고 달력 출력이 끝났을 때 마지막 날의 다음 요일에 위치해 있는데,
+                // 이번 달의 1일의 요일로 돌아가려면 이번 달 - 28을 하면 돌아간다.
+                //그려먼 저번 달에 관점에서 보면 다음 달의 1일 즉 마지막 날의 다음 요일에 oneweek가 위치해 있으므로,
+                //저번 달 - 28을 하면 저번 달의 1일의 위치로 oneweek가 간다.
             }
 
             month--;
@@ -283,12 +288,27 @@ void draw_Calendar()
             if (month == 0) {
                 month = 12;
                 year--;
+
+
             }
+            COORD pos = { 0 , 0 };
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
+            //system("cls");
+        }
+
+        //'w'나 'W'를 누르면 년도가 증가
+        if (q == 'w' || q == 'W') {
+            year++;
+            oneweek++;
+            if (year % 400 == 0 && year % 100 == 0 || year % 4 == 0)
+                oneweek++;
+
 
             COORD pos = { 0 , 0 };
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
             //system("cls");
         }
+
 
         // 지정한 키 제외하고 다른 키를 누르면 응답 안하게 설정
         else {
@@ -296,8 +316,6 @@ void draw_Calendar()
         }
     }
 }
-
-
 
 int main()
 {
