@@ -30,6 +30,7 @@ void add_Schedule()
 	scanf("%c", &add_answer); //add_answer에 대답저장
 	printf("    "); //4칸 뛰어 쓰기
 	for (int i = 0; i < 59; i++) printf("="); // 분리선 생성
+	printf("\n"); 
 	if (add_answer == 'n' || add_answer == 'N') {
 		system("cls"); //화면 지우기
 		return 0; //함수 종료
@@ -37,7 +38,7 @@ void add_Schedule()
 
 	else if (add_answer == 'y' || add_answer == 'Y')
 	{
-		
+		printf("    일정을 추가하실 날짜을 선택해주세요( 일정추가 년도는 현재기준으로 +40년 까지만 가능합니다) : ");
 	}
 }
 
@@ -314,7 +315,8 @@ void draw_Calendar()
 			//system("cls");
 		}
 
-		if (q == 'c' || q == 'C')
+		//c(create)을 누르면 스케줄을 추가할수있는 함수실행
+		if (q == 'c' || q == 'C') 
 		{
 			add_Schedule();
 		}
