@@ -3,7 +3,9 @@
 #include <time.h>
 #include <conio.h>
 
-char schedule[40][12][31];
+char schedule[40][12][31][1000];
+
+void draw_Calendar();
 
 void CursorView()
 {
@@ -21,8 +23,8 @@ void gotoxy(int x, int y)
 
 void add_Schedule()
 {
-	int schedule_month, schedule_day;
-	char add_answer;
+	int schedule_month, schedule_day, schedule_year; //스케줄을 입력받을 날짜을 저장하는 변수 선언
+	char add_answer; //실행을 할수있게 하는 변수 생성
 	gotoxy(2, 33); // 출력 이동
 	for (int i = 0; i < 59; i++) printf("="); // 분리선 생성
 	printf("\n");
@@ -31,14 +33,54 @@ void add_Schedule()
 	printf("    "); //4칸 뛰어 쓰기
 	for (int i = 0; i < 59; i++) printf("="); // 분리선 생성
 	printf("\n"); 
-	if (add_answer == 'n' || add_answer == 'N') {
+
+	//일정을 추가하지 않는다 했을때
+	if (add_answer == 'n' || add_answer == 'N')
+	{
+		printf("\n      입력창을 종료합니다. \n"); //입력창 종료 전 안내문 출력
 		system("cls"); //화면 지우기
 		return 0; //함수 종료
 	}
 
+	//일정을 추가한다 했을 떄
 	else if (add_answer == 'y' || add_answer == 'Y')
 	{
-		printf("    일정을 추가하실 날짜을 선택해주세요( 일정추가 년도는 현재기준으로 +40년 까지만 가능합니다) : ");
+		printf("    일정을 추가하실 날짜을 선택해주세요: "); //일정을 추가할 날짜를 입력받는다.
+		scanf("%d %d %d", &schedule_year, &schedule_month, &schedule_day); //일정을 추가할 날짜를 입력받는다
+		printf("     %d년 %d월 %d일의 일정을 추가해주세요! : ", schedule_year , schedule_month , schedule_day); //일정을 추가할수있게하는 문장을 출력한다.
+		scanf("%s", schedule[schedule_year - 2022][schedule_month][schedule_day]); //일정을 입력받습니다
+		
+		// 연도 범위 제한
+		if (schedule_year > 2062 || schedule_year < 2022) 
+		{
+			printf("\n     지원이 되지않는 범위입니다. 2022년 기준 2022 ~ 2062년 까지 입력 가능합니다.\n"); //입력할수있는 년도 범위을 안내해주는 안내문 출력
+			system(500); //0.5초 대기
+			printf("\n     입력창을 종료합니다. 입력창을 다시 실행시켜주십시오. \n"); //입력창을 종료시킨다고 안내문을 출력한다
+			Sleep(500); //0.5초 대기
+			printf("\n      입력창을 종료합니다. \n"); //입력창 종료 전 안내문 출력
+			Sleep(500);
+			system("cls");
+			return 0;
+		
+		}
+
+		//월 범위 초과 또는 0이하
+
+
+		printf("\n      일정을 추가하겠습니다.\n"); //일정을 추가하겠다는 안내문 출력
+		Sleep(500); //0.5초 대기
+		printf("\n      입력창을 종료합니다. \n"); //입력창 종료 전 안내문 출력
+		Sleep(2000); // 2초 대기
+		system("cls");
+	}
+
+	else // y 또는 n 이 아닌 문자를 입력했을경우
+	{
+		printf("\n     입력창을 종료합니다. 입력창을 다시 실행시켜주십시오. \n"); //입력창을 종료시킨다고 안내문을 출력한다
+		Sleep(500); //0.5초 대기
+		printf("\n      입력창을 종료합니다. \n"); //입력창 종료 전 안내문 출력
+		Sleep(500);
+		system("cls");
 	}
 }
 
@@ -49,7 +91,7 @@ void draw_start_Calendar()
 	struct tm* t;
 	timer = time(NULL); // 1970년 1월 1일 0시 0분 0초부터 시작하여 현재까지의 초
 	t = localtime(&timer); // 포맷팅을 위해 구조체에 넣기
-	int year = t->tm_year;
+	int year = t->tm_year + 1900;
 
 	printf("\n"); //한칸 뛰어쓰기
 	printf("  "); // 빈칸 출력
