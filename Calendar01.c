@@ -249,7 +249,7 @@ void Edit_Schedule(int year, int month, int day)
 
 	gotoxy(2, 33);
 
-	printf("\n     %d년 %d월 %d일을 수정하겠습니까 ( Y / N ) : ",year,month,day);
+	printf("\n\n     %d년 %d월 %d일을 수정하겠습니까 ( Y / N ) : ",year,month,day);
 	scanf("%s", Edit_Schedule);
 
 	if ((Edit_Schedule[0] == 'Y' || Edit_Schedule[0] == 'y') && schedule[year][month][day] != NULL)
@@ -289,7 +289,22 @@ void Edit_Schedule(int year, int month, int day)
 
 void Daily_Schedule(int year, int month, int day) 
 {
-	
+	gotoxy(33, 3); printf("=====================================");
+	gotoxy(33, 5); printf("         %d년 %d월 %d일 일정         ", year, month, day);
+	if (schedule[year][month][day][0] != 0) {
+		gotoxy(33, 8); printf("  일정 : %s", schedule[year][month][day]);
+	}
+
+	else if (schedule[year][month][day][0] == 0) {
+		gotoxy(33, 8); printf("  일정이 없습니다. ");
+	}
+
+	gotoxy(33, 19); printf("=====================================");
+	gotoxy(33, 21); printf("****************조작법***************");
+	gotoxy(33, 23); printf("  A: 이전 달 D: 다음달               ");
+	gotoxy(33, 25); printf("  W: 다음 해 S: 이전 해              ");
+	gotoxy(33, 27); printf("  방향키 : 날짜이동 C :일정추가      ");
+	gotoxy(33, 29); printf("  E : 일정 수정 V : 일정 보기        ");
 }
 
 void draw_Calendar()
@@ -343,7 +358,7 @@ void draw_Calendar()
 		case RIGHT:
 		case UP:
 		case DOWN:
-
+			system("cls");
 			printf("\n\t\t\t%4d년\t%2d월 %2d일\n", year, month, day);
 			printf("\n    ");
 			for (i = 0; i < 59; i++)
@@ -561,9 +576,9 @@ void draw_Calendar()
 			}
 			break;
 		}
-
-
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 15); //글자 색 다시 흰색으로 변경
+
+		Daily_Schedule(year, month, day);
 
 		for (i = 1; i < 7; i++) {
 			for (j = 1; j < 8; j++) {
@@ -679,6 +694,7 @@ void draw_Calendar()
 				}
 				break;
 			}
+			Daily_Schedule(year, month, day);
 		}
 
 
