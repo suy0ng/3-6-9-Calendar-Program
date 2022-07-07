@@ -10,9 +10,18 @@
 #define UP 72
 #define DOWN 80
 
-char schedule[4000][12][31][1111] = { 0 };
+char schedule[4000][12][31][500] = { 0 };
+
+char schedule_temp[4000][12][31][500] = { 0 };
+
+FILE* fpp = NULL;
+FILE* fps = NULL;
+
+
 
 int i, j; //i = for문 돌리기용, j = for문 돌리기용2
+
+int year_temp = 0, month_temp = 0, day_temp = 0; // 파일 포인터에 쓸거
 
 void CursorView();
 
@@ -34,6 +43,22 @@ void Daily_Schedule(int year, int month, int day);
 
 int main()
 {
+
+   fps = fopen("pile.txt", "rt");
+   if (fps == NULL) {
+      printf(" ");
+   }
+   else {
+      while (feof(fps) == 0) {
+         fscanf(fps, "%d.%d.%d : ", &year_temp, &month_temp, &day_temp);
+         fscanf(fps, "%[^\n]", schedule[year_temp][month_temp][day_temp]);
+      }
+      fclose(fps);
+   }
+
+
+
+
    CursorView();
    system("mode con cols=115 lines=46");
    draw_start_Calendar(); //달력의 첫화면 출력
@@ -129,6 +154,20 @@ void add_Schedule(int year, int month, int day)
       printf("\n     %d년 %d월 %d일의 일정을 추가해주세요! : ", year, month, day); //일정을 추가할수있게하는 문장을 출력한다.
       scanf(" %[^\n]", schedule[year][month][day]); //일정을 입력받습니다
 
+
+
+      fpp = fopen("pile.txt", "at");
+
+      if (fpp == NULL) {
+         return 0;
+      }
+
+      fprintf(fpp, "\n%d.%d.%d : %s", year, month, day, schedule[year][month][day]);
+
+      fclose(fpp);
+
+
+
       printf("\n     일정을 추가하겠습니다.\n"); //일정을 추가하겠다는 안내문 출력
       Sleep(500); //0.5초 대기
       printf("\n     입력창을 종료합니다. \n"); //입력창 종료 전 안내문 출력
@@ -184,6 +223,45 @@ void Edit_Schedule(int year, int month, int day)
          schedule[year][month][day] == NULL;
          printf("\n     %d년 %d월 %d일의 일정을 수정해주세요 : ", year, month, day);
          scanf(" %[^\n]", schedule[year][month][day]);
+
+
+
+
+
+         fps = fopen("pile.txt", "rt");
+
+         fpp = fopen("temp.txt", "at");
+         while (feof(fps) == 0) {
+
+
+            fscanf(fps, "%d.%d.%d : ", &year_temp, &month_temp, &day_temp);
+            fscanf(fps, "%[^\n]", schedule_temp[year_temp][month_temp][day_temp]);
+
+
+            if (year != year_temp || month != month_temp || day != day_temp) {
+
+               fprintf(fpp, "\n%d.%d.%d : %s", year_temp, month_temp, day_temp, schedule_temp[year_temp][month_temp][day_temp]);
+
+            }
+
+            else
+               fprintf(fpp, "\n%d.%d.%d : %s", year, month, day, schedule[year][month][day]);
+
+
+         }
+
+         fclose(fps);
+
+         fclose(fpp);
+
+         remove("pile.txt");
+
+         rename("temp.txt", "pile.txt");
+
+
+
+
+
          Sleep(500);
          printf("\n     일정을 수정하였습니다. 수정된 일정은 복구할 수 없습니다.\n");
          system("cls");
@@ -235,6 +313,39 @@ void Remove_Schedule(int year, int month, int day)
          printf("\n     일정을 삭제하겠습니다. 삭제된 일정은 복구할 수 없습니다.\n");
          Sleep(500);
          schedule[year][month][day][0] = 0;
+
+
+
+
+            fps = fopen("pile.txt", "rt");
+
+            fpp = fopen("temp.txt", "at");
+         do {
+
+
+            fscanf(fps, "%d.%d.%d : ", &year_temp, &month_temp, &day_temp);
+            fscanf(fps, "%[^\n]", schedule_temp[year_temp][month_temp][day_temp]);
+
+
+            if (year != year_temp || month != month_temp || day != day_temp) {
+
+               fprintf(fpp, "\n%d.%d.%d : %s", year_temp, month_temp, day_temp, schedule_temp[year_temp][month_temp][day_temp]);
+
+            }
+         } while (feof(fps) == 0);
+
+         fclose(fps);
+
+         fclose(fpp);
+
+         remove("pile.txt");
+
+         rename("temp.txt", "pile.txt");
+
+
+
+
+
          system("cls");
          return 0;
       }
@@ -922,13 +1033,11 @@ void draw_Calendar()
             SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
             //system("cls");
          }
-         
+
          // v를 눌렀을떄 veiw_month_Schedule 실행
          if (q == 'v' || q == 'V')
          {
             view_month_Schedule(year, month, day);
-            
-
          }
 
          // c를 눌렀을 때 add_Schedule 함수 실행
@@ -989,11 +1098,6 @@ void draw_Calendar()
             day_of_the_week -= 7;
          while (day_of_the_week < 1)
             day_of_the_week += 7;
-
-         if (q == '^') {
-            gotoxy(40, 45);
-            printf("                           어쩔티비");
-            system("cls");
          }
 
 
